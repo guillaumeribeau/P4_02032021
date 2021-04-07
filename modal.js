@@ -25,7 +25,7 @@ const inputQuant = document.querySelector('input[name=quantity]');
 const inputLocation = document.querySelector('input[name=location]');
 const inputConditions = document.querySelector('input[name=conditions]');
 
-//selection de la id de la div validation 
+//selection de l'id de la div validation 
 let resultFirst = document.getElementById("first-validation");
 let resultLast = document.getElementById("last-validation");
 let resultEmail = document.getElementById("email-validation"); 
@@ -34,6 +34,11 @@ let resultQuant = document.getElementById("quant-validation");
 let resultLocation = document.getElementById("location-validation");
 let resultConditions = document.getElementById("conditions-validation");
 let resultDate = document.getElementById("date-validation");
+
+//regex
+let regPrenomNom = /[a-zA-Z]{2,64}/;
+let regEmail = /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,16})(\.[a-z]{2,16})?$/;
+
 
 
 // launch modal event
@@ -70,12 +75,9 @@ function borderGreen (indexDuChamp){
   indexDuChamp.style.border='2px solid green';
 }
 
-//regex
-let regPrenomNom = /[a-zA-Z]{2,64}/;
-let regEmail = /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,16})(\.[a-z]{2,16})?$/;
+
 
 /* ecoute la touche relaché et affiche message en consequence */
-
 
 inputFirst.addEventListener('keyup', function(e) {
   // écouter touche relaché
@@ -135,69 +137,66 @@ inputDate.addEventListener('change', function(e) {
      }
  });
 
- inputConditions.addEventListener('change', e => {
-  if(e.target.checked){
-    displayNone(resultConditions);
-  }
-});
-
+ 
 
 
 // acceptation des CGV 
 document.getElementById("checkbox1").attributes["required"] = "";
 
 
-// montrer une notification 
+// montrer une notification losrque le forumalaire est valide
 function notification () {
 document.getElementById("note").style.display = "block";
 
 }
 
+
 let count=0;
 
-//funontion vider message d'erreur de saisie et remplacer par autre message
+//function vider message d'erreur de saisie et remplacer par autre message
 function caseVide (input){
   input.style.display='block'
   input.innerHTML= 'Merci de completer ce champ'
 };
 
+//fonction message erreur Nom ou prenom
 function caseErrorPrenomNom(messageDiv){
   messageDiv.style.display='block';
   messageDiv.innerHTML='Merci de renseigner au moins deux caractères'
 };
 
-// function nom et prenom mail message quand c'est vide
-function nomPrenomMail(input,divError,){
+// verification Nom et prenom
+function nomPrenom(input,divError){
 
 if(input.value.length == 0){
   afficherMessage(divError);
   caseVide(divError);
   count++; 
-  }};
-
-
-
-//verification regex nom/prenom/
-
-  function verifRegexNom(input,regex,divError){
-  if (regex.test(input.value)==false){
-        caseErrorPrenomNom(divError);
+  }else if (regPrenomNom.test(input.value)==false){
+    caseErrorPrenomNom(divError);
    count++
-   }};
 
-  
-//verification regex mail 
- function verifRegexMail (input,regex){
-  if (regex.test(input.value)==false){
-    afficherMessage(resultEmail);
-    resultEmail.innerHTML='veuillez saisir une adresse Email valide';
-    count++;
- }};
+  }
+  else count=0
+};
 
+// verification email 
+function mail (input,divError){
+  if(input.value.length == 0){
+    afficherMessage(divError);
+    caseVide(divError);
+    count++; 
+
+  } else if (regEmail.test(input.value)==false){
+   afficherMessage(divError);
+   resultEmail.innerHTML='Merci de renseigner une adresse Mail valide';
+   count++;
+}
+else count=0
+};
 
 
 // date
-
 function date() {
 
 if (inputDate.value.length==0) {
@@ -252,26 +251,21 @@ function ville () {
 };
 
 
-  //conditions generales
+//conditions generales
 function boutonCgv () {
-
-
-  if (inputConditions.checked==false){
+ if (inputConditions.checked==false){
   afficherMessage(resultConditions);
   resultConditions.innerHTML='Vous devez accepter les conditions générales';
   count++
   }
   };
 
+
 // fonction pour verifier que tout est ok avant envoie du formulaire
 function validation(){
-  nomPrenomMail(inputFirst,resultFirst);
-  nomPrenomMail(inputLast,resultLast);
-  nomPrenomMail(inputEmail,resultEmail);
-  
-  verifRegexNom(inputFirst,regPrenomNom,resultFirst);
-  verifRegexNom(inputLast,regPrenomNom, resultLast);
-  verifRegexMail (inputEmail,regEmail,resultEmail);
+  nomPrenom(inputFirst,resultFirst);
+  nomPrenom(inputLast,resultLast);
+  mail(inputEmail,resultEmail);
   date();
   tournoi();
   ville();

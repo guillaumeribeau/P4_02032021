@@ -1,7 +1,7 @@
 # Projet 4 Game ON
 
 Projet 4 de la formation OpenClassrooms "Développeur Front End". 
-Gestion d'un formulaire de contact en Vanilla JS 
+Gestion d'un formulaire de contact en Vanilla JS.
 
 
 ## Demo
